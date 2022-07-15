@@ -1,21 +1,22 @@
-# Ignore everything
+# Ignore all
 *
 
-# Un-ignore directories
-!*/
-
-# Un-ignore files with extensions
+# Unignore all with extensions
 !*.*
 
-# Specifically un-ignore 'makefile'
-!makefile
+# Unignore all dirs
+!*/
 
-# Ignore image files
-*.bmp
-*.png
+### Above combination will ignore all files without extension ###
 
-# Ignore wav files
-*.wav
+# Ignore files with extension `.class` & `.exe`
+*.class
+*.exe
 
-# Ignore object files
-*.o
+# Ignore `bin` dir
+bin/
+# or
+*/bin/*
+
+# Unignore all `.exe` in `bin` dir
+!*/bin/*.exe
