@@ -1,8 +1,8 @@
-#ifndef MATRIX2D_H
-#define MATRIX2D_H
+#ifndef WOOMATRIX2D_H
+#define WOOMATRIX2D_H
 
 /* *************************************************************************************************
-	Matrix2D
+	wooMatrix2D
 
 	Class to handle two-dimensional matrices and their operations.
 	Part of the LinAlg linear algebra library, which was created following the excellent
@@ -12,21 +12,21 @@
 ************************************************************************************************* */
 
 //template to allow matrices of different (presumed numeric) data types
-//using Template means that we need to define as well as declare everything in the header file (hence no Matrix2D.cpp)
+//using Template means that we need to define as well as declare everything in the header file (hence no wooMatrix2D.cpp)
 template <class T>
 
-class Matrix2D
+class wooMatrix2D
 {
 public:
 	//constructors
-	Matrix2D();
-	Matrix2D(int nRows, int nCols);
-    Matrix2D(int nRows, int nCols, const T *inputData);
-	Matrix2D(const Matrix2D<T>& inputMatrix);
-    Matrix2D(int nRows, int nCols, const std::vector<T>* inputData);
+	wooMatrix2D();
+	wooMatrix2D(int nRows, int nCols);
+    wooMatrix2D(int nRows, int nCols, const T *inputData);
+	wooMatrix2D(const wooMatrix2D<T>& inputMatrix);
+    wooMatrix2D(int nRows, int nCols, const std::vector<T>* inputData);
 
     //destructor
-    ~Matrix2D();
+    ~wooMatrix2D();
 
     //config
     bool resize(int numRows, int numCols);
@@ -43,27 +43,27 @@ public:
     T determinant();
 
     // Overload == operator.
-    bool operator== (const Matrix2D<T>& rhs);
-    bool compare (const Matrix2D<T>& matrix1, double tolerance);
+    bool operator== (const wooMatrix2D<T>& rhs);
+    bool compare (const wooMatrix2D<T>& matrix1, double tolerance);
 
     // Overload the assignment operator.
-    Matrix2D<T> operator= (const Matrix2D<T>& rhs);
+    wooMatrix2D<T> operator= (const wooMatrix2D<T>& rhs);
 
     // Overload +, - and * operators
-    // friends to grant access to Matrix2D instance members/functions, since these are not part of the class
-    template <class U> friend Matrix2D<U> operator+ (const Matrix2D<U>& lhs, const Matrix2D<U>& rhs);
-    template <class U> friend Matrix2D<U> operator+ (const U& lhs, const Matrix2D<U>& rhs);
-    template <class U> friend Matrix2D<U> operator+ (const Matrix2D<U>& lhs, const U& rhs);
+    // friends to grant access to wooMatrix2D instance members/functions, since these are not part of the class
+    template <class U> friend wooMatrix2D<U> operator+ (const wooMatrix2D<U>& lhs, const wooMatrix2D<U>& rhs);
+    template <class U> friend wooMatrix2D<U> operator+ (const U& lhs, const wooMatrix2D<U>& rhs);
+    template <class U> friend wooMatrix2D<U> operator+ (const wooMatrix2D<U>& lhs, const U& rhs);
 
-    template <class U> friend Matrix2D<U> operator- (const Matrix2D<U>& lhs, const Matrix2D<U>& rhs);
-    template <class U> friend Matrix2D<U> operator- (const U& lhs, const Matrix2D<U>& rhs);
-    template <class U> friend Matrix2D<U> operator- (const Matrix2D<U>& lhs, const U& rhs);
+    template <class U> friend wooMatrix2D<U> operator- (const wooMatrix2D<U>& lhs, const wooMatrix2D<U>& rhs);
+    template <class U> friend wooMatrix2D<U> operator- (const U& lhs, const wooMatrix2D<U>& rhs);
+    template <class U> friend wooMatrix2D<U> operator- (const wooMatrix2D<U>& lhs, const U& rhs);
 
-    template <class U> friend Matrix2D<U> operator* (const Matrix2D<U>& lhs, const Matrix2D<U>& rhs);
-    template <class U> friend Matrix2D<U> operator* (const U& lhs, const Matrix2D<U>& rhs);
-    template <class U> friend Matrix2D<U> operator* (const Matrix2D<U>& lhs, const U& rhs);
+    template <class U> friend wooMatrix2D<U> operator* (const wooMatrix2D<U>& lhs, const wooMatrix2D<U>& rhs);
+    template <class U> friend wooMatrix2D<U> operator* (const U& lhs, const wooMatrix2D<U>& rhs);
+    template <class U> friend wooMatrix2D<U> operator* (const wooMatrix2D<U>& lhs, const U& rhs);
 
-    bool separate(Matrix2D<T> *matrix1, Matrix2D<T> *matrix2, int colNum);
+    bool separate(wooMatrix2D<T> *matrix1, wooMatrix2D<T> *matrix2, int colNum);
     
 //private:
 public:
@@ -73,9 +73,9 @@ public:
     void swapRow(int i, int j);
     void multAdd(int i, int j, T multFactor);
     void multRow(int i, T multFactor);
-    bool join(const Matrix2D<T>& matrix2);
+    bool join(const wooMatrix2D<T>& matrix2);
     int findRowWithMaxElement(int colNum, int startingRow);
-    Matrix2D<T> findSubMatrix(int colNum, int rowNum);
+    wooMatrix2D<T> findSubMatrix(int colNum, int rowNum);
     void printMatrix();
 
 private:
@@ -91,7 +91,7 @@ private:
 
 //default constructor
 template <class T>
-Matrix2D<T>::Matrix2D()
+wooMatrix2D<T>::wooMatrix2D()
 {
     m_nRows = 1;
     m_nCols = 1;
@@ -102,7 +102,7 @@ Matrix2D<T>::Matrix2D()
 
 //constructor given rows/cols (create empty matrix)
 template <class T>
-Matrix2D<T>::Matrix2D(int nRows, int nCols)
+wooMatrix2D<T>::wooMatrix2D(int nRows, int nCols)
 {
     m_nRows = nRows;
     m_nCols = nCols;
@@ -114,7 +114,7 @@ Matrix2D<T>::Matrix2D(int nRows, int nCols)
 
 //constructor given const linear array (create matrix from values)
 template <class T>
-Matrix2D<T>::Matrix2D(int nRows, int nCols, const T *inputData)
+wooMatrix2D<T>::wooMatrix2D(int nRows, int nCols, const T *inputData)
 {
     m_nRows = nRows;
     m_nCols = nCols;
@@ -126,7 +126,7 @@ Matrix2D<T>::Matrix2D(int nRows, int nCols, const T *inputData)
 
 //constructor given std::vector
 template <class T>
-Matrix2D<T>::Matrix2D(int nRows, int nCols, const std::vector<T> *inputData)
+wooMatrix2D<T>::wooMatrix2D(int nRows, int nCols, const std::vector<T> *inputData)
 {
     m_nRows = nRows;
     m_nCols = nCols;
@@ -138,7 +138,7 @@ Matrix2D<T>::Matrix2D(int nRows, int nCols, const std::vector<T> *inputData)
 
 //copy constructor
 template <class T>
-Matrix2D<T>::Matrix2D(const Matrix2D<T>& inputMatrix)
+wooMatrix2D<T>::wooMatrix2D(const wooMatrix2D<T>& inputMatrix)
 {
     m_nRows = inputMatrix.m_nRows;
     m_nCols = inputMatrix.m_nCols;
@@ -151,7 +151,7 @@ Matrix2D<T>::Matrix2D(const Matrix2D<T>& inputMatrix)
 
 //destructor
 template <class T>
-Matrix2D<T>::~Matrix2D()
+wooMatrix2D<T>::~wooMatrix2D()
 {
     if (m_matrixData)
         delete[] m_matrixData;
@@ -163,7 +163,7 @@ Matrix2D<T>::~Matrix2D()
     CONFIGURATION
 *************************************************/
 template <class T>
-bool Matrix2D<T>::resize(int nCols, int nRows)
+bool wooMatrix2D<T>::resize(int nCols, int nRows)
 {
     m_nRows = nRows;
     m_nCols = nCols;
@@ -186,7 +186,7 @@ bool Matrix2D<T>::resize(int nCols, int nRows)
 }
 //turn this matrix into identity matrix if square
 template<class T>
-void Matrix2D<T>::setToIdentity()
+void wooMatrix2D<T>::setToIdentity()
 {
     if (!isSquare())
     {
@@ -213,7 +213,7 @@ void Matrix2D<T>::setToIdentity()
     ACCESSORS
 *************************************************/
 template <class T>
-T Matrix2D<T>::getElement(int row, int col)
+T wooMatrix2D<T>::getElement(int row, int col)
 {
     int linearIndex = sub2Ind(row, col);
     if (linearIndex >= 0)
@@ -227,7 +227,7 @@ T Matrix2D<T>::getElement(int row, int col)
 }
 
 template <class T>
-bool Matrix2D<T>::setElement(int row, int col, T value)
+bool wooMatrix2D<T>::setElement(int row, int col, T value)
 {
     int linearIndex = sub2Ind(row, col);
     if (linearIndex >= 0)
@@ -242,20 +242,20 @@ bool Matrix2D<T>::setElement(int row, int col, T value)
 }
 
 template<class T>
-int Matrix2D<T>::getNumRows()
+int wooMatrix2D<T>::getNumRows()
 {
     return m_nRows;
 }
 
 template<class T>
-int Matrix2D<T>::getNumCols()
+int wooMatrix2D<T>::getNumCols()
 {
     return m_nCols;
 }
 
 //inverse using gauss-jordan elimination
 template<class T>
-bool Matrix2D<T>::inverse()
+bool wooMatrix2D<T>::inverse()
 {
     //can only compute inverse of square matrix
     if (!isSquare())
@@ -264,7 +264,7 @@ bool Matrix2D<T>::inverse()
     }
 
     //form identity matrix with same dimensions & join it
-    Matrix2D<T> identityMatrix(m_nRows, m_nCols);
+    wooMatrix2D<T> identityMatrix(m_nRows, m_nCols);
     identityMatrix.setToIdentity();
 
     int originalNumCols = m_nCols;
@@ -349,8 +349,8 @@ bool Matrix2D<T>::inverse()
         }
 
         //separate into left and right halves
-        Matrix2D<T> leftHalf;
-        Matrix2D<T> rightHalf;
+        wooMatrix2D<T> leftHalf;
+        wooMatrix2D<T> rightHalf;
         this->separate(&leftHalf, &rightHalf, originalNumCols);
 
         //after separating, left half should be identity matrix
@@ -377,7 +377,7 @@ bool Matrix2D<T>::inverse()
 
 //recursive function to calculate matrix determinant
 template<class T>
-inline T Matrix2D<T>::determinant()
+inline T wooMatrix2D<T>::determinant()
 {
     if (!isSquare())
     {
@@ -396,7 +396,7 @@ inline T Matrix2D<T>::determinant()
 
         for (int j = 0; j < m_nCols; j++)
         {
-            Matrix2D<T> subMatrix = findSubMatrix(0,j);
+            wooMatrix2D<T> subMatrix = findSubMatrix(0,j);
 
             cumulativeSum += this->getElement(0, j) * subMatrix.determinant() * sign;
             sign = -sign;
@@ -416,7 +416,7 @@ inline T Matrix2D<T>::determinant()
 *************************************************/
 //matrix + matrix
 template <class T>
-Matrix2D<T> operator+ (const Matrix2D<T>& lhs, const Matrix2D<T>& rhs)
+wooMatrix2D<T> operator+ (const wooMatrix2D<T>& lhs, const wooMatrix2D<T>& rhs)
 {
     int numRows = lhs.m_nRows;
     int numCols = lhs.m_nCols;
@@ -428,14 +428,14 @@ Matrix2D<T> operator+ (const Matrix2D<T>& lhs, const Matrix2D<T>& rhs)
         tmpResult[i] = lhs.m_matrixData[i] + rhs.m_matrixData[i];
     }
 
-    Matrix2D<T> result(numRows, numCols, tmpResult);
+    wooMatrix2D<T> result(numRows, numCols, tmpResult);
     delete[] tmpResult;
     return result;
 }
 
 //scalar + matrix
 template <class T>
-Matrix2D<T> operator+ (const T& lhs, const Matrix2D<T>& rhs)
+wooMatrix2D<T> operator+ (const T& lhs, const wooMatrix2D<T>& rhs)
 {
     int numRows = rhs.m_nRows;
     int numCols = rhs.m_nCols;
@@ -447,14 +447,14 @@ Matrix2D<T> operator+ (const T& lhs, const Matrix2D<T>& rhs)
         tmpResult[i] = lhs + rhs.m_matrixData[i];
     }
 
-    Matrix2D<T> result(numRows, numCols, tmpResult);
+    wooMatrix2D<T> result(numRows, numCols, tmpResult);
     delete[] tmpResult;
     return result;
 }
 
 //matrix + scalar
 template <class T>
-Matrix2D<T> operator+ (const Matrix2D<T>& lhs, const T& rhs)
+wooMatrix2D<T> operator+ (const wooMatrix2D<T>& lhs, const T& rhs)
 {
     int numRows = lhs.m_nRows;
     int numCols = lhs.m_nCols;
@@ -466,7 +466,7 @@ Matrix2D<T> operator+ (const Matrix2D<T>& lhs, const T& rhs)
         tmpResult[i] = lhs.m_matrixData[i] + rhs;
     }
 
-    Matrix2D<T> result(numRows, numCols, tmpResult);
+    wooMatrix2D<T> result(numRows, numCols, tmpResult);
     delete[] tmpResult;
     return result;
 }
@@ -476,7 +476,7 @@ Matrix2D<T> operator+ (const Matrix2D<T>& lhs, const T& rhs)
 *************************************************/
 //matrix - matrix
 template <class T>
-Matrix2D<T> operator- (const Matrix2D<T>& lhs, const Matrix2D<T>& rhs)
+wooMatrix2D<T> operator- (const wooMatrix2D<T>& lhs, const wooMatrix2D<T>& rhs)
 {
     int numRows = lhs.m_nRows;
     int numCols = lhs.m_nCols;
@@ -488,14 +488,14 @@ Matrix2D<T> operator- (const Matrix2D<T>& lhs, const Matrix2D<T>& rhs)
         tmpResult[i] = lhs.m_matrixData[i] - rhs.m_matrixData[i];
     }
 
-    Matrix2D<T> result(numRows, numCols, tmpResult);
+    wooMatrix2D<T> result(numRows, numCols, tmpResult);
     delete[] tmpResult;
     return result;
 }
 
 //scalar - matrix
 template <class T>
-Matrix2D<T> operator- (const T& lhs, const Matrix2D<T>& rhs)
+wooMatrix2D<T> operator- (const T& lhs, const wooMatrix2D<T>& rhs)
 {
     int numRows = rhs.m_nRows;
     int numCols = rhs.m_nCols;
@@ -507,14 +507,14 @@ Matrix2D<T> operator- (const T& lhs, const Matrix2D<T>& rhs)
         tmpResult[i] = lhs - rhs.m_matrixData[i];
     }
 
-    Matrix2D<T> result(numRows, numCols, tmpResult);
+    wooMatrix2D<T> result(numRows, numCols, tmpResult);
     delete[] tmpResult;
     return result;
 }
 
 //matrix - scalar
 template <class T>
-Matrix2D<T> operator- (const Matrix2D<T>& lhs, const T& rhs)
+wooMatrix2D<T> operator- (const wooMatrix2D<T>& lhs, const T& rhs)
 {
     int numRows = lhs.m_nRows;
     int numCols = lhs.m_nCols;
@@ -526,7 +526,7 @@ Matrix2D<T> operator- (const Matrix2D<T>& lhs, const T& rhs)
         tmpResult[i] = lhs.m_matrixData[i] - rhs;
     }
 
-    Matrix2D<T> result(numRows, numCols, tmpResult);
+    wooMatrix2D<T> result(numRows, numCols, tmpResult);
     delete[] tmpResult;
     return result;
 }
@@ -536,7 +536,7 @@ Matrix2D<T> operator- (const Matrix2D<T>& lhs, const T& rhs)
 *************************************************/
 //matrix * matrix
 template <class T>
-Matrix2D<T> operator* (const Matrix2D<T>& lhs, const Matrix2D<T>& rhs)
+wooMatrix2D<T> operator* (const wooMatrix2D<T>& lhs, const wooMatrix2D<T>& rhs)
 {
     int l_numRows = lhs.m_nRows;
     int l_numCols = lhs.m_nCols;
@@ -565,20 +565,20 @@ Matrix2D<T> operator* (const Matrix2D<T>& lhs, const Matrix2D<T>& rhs)
                 tmpResult[resultIndex] = elementResult;
             }
         }
-        Matrix2D<T> result(l_numRows, r_numCols, tmpResult);
+        wooMatrix2D<T> result(l_numRows, r_numCols, tmpResult);
         delete[] tmpResult;
         return result;
     }
     else
     {
-        Matrix2D<T> result(1, 1);
+        wooMatrix2D<T> result(1, 1);
         return result;
     }
 }
 
 //scalar * matrix
 template <class T>
-Matrix2D<T> operator* (const T& lhs, const Matrix2D<T>& rhs)
+wooMatrix2D<T> operator* (const T& lhs, const wooMatrix2D<T>& rhs)
 {
     int numRows = rhs.m_nRows;
     int numCols = rhs.m_nCols;
@@ -590,14 +590,14 @@ Matrix2D<T> operator* (const T& lhs, const Matrix2D<T>& rhs)
         tmpResult[i] = lhs * rhs.m_matrixData[i];
     }
 
-    Matrix2D<T> result(numRows, numCols, tmpResult);
+    wooMatrix2D<T> result(numRows, numCols, tmpResult);
     delete[] tmpResult;
     return result;
 }
 
 //matrix * scalar
 template <class T>
-Matrix2D<T> operator* (const Matrix2D<T>& lhs, const T& rhs)
+wooMatrix2D<T> operator* (const wooMatrix2D<T>& lhs, const T& rhs)
 {
     int numRows = lhs.m_nRows;
     int numCols = lhs.m_nCols;
@@ -609,7 +609,7 @@ Matrix2D<T> operator* (const Matrix2D<T>& lhs, const T& rhs)
         tmpResult[i] = lhs.m_matrixData[i] * rhs;
     }
 
-    Matrix2D<T> result(numRows, numCols, tmpResult);
+    wooMatrix2D<T> result(numRows, numCols, tmpResult);
     delete[] tmpResult;
     return result;
 }
@@ -618,7 +618,7 @@ Matrix2D<T> operator* (const Matrix2D<T>& lhs, const T& rhs)
     == OPERATOR
 *************************************************/
 template <class T>
-bool Matrix2D<T>::operator== (const Matrix2D<T>& rhs)
+bool wooMatrix2D<T>::operator== (const wooMatrix2D<T>& rhs)
 {
     //check size before looping through
     if ((this->m_nRows != rhs.m_nRows) && (this->m_nCols != rhs.m_nCols))
@@ -639,7 +639,7 @@ bool Matrix2D<T>::operator== (const Matrix2D<T>& rhs)
 }
 
 template<class T>
-bool Matrix2D<T>::compare(const Matrix2D<T>& matrix1, double tolerance)
+bool wooMatrix2D<T>::compare(const wooMatrix2D<T>& matrix1, double tolerance)
 {
     int numRows1 = matrix1.m_nRows;
     int numCols1 = matrix1.m_nCols;
@@ -672,7 +672,7 @@ bool Matrix2D<T>::compare(const Matrix2D<T>& matrix1, double tolerance)
 
 //separate matrix into 2 matrices around colNum
 template<class T>
-bool Matrix2D<T>::separate(Matrix2D<T>* matrix1, Matrix2D<T>* matrix2, int colNum)
+bool wooMatrix2D<T>::separate(wooMatrix2D<T>* matrix1, wooMatrix2D<T>* matrix2, int colNum)
 {
     //sizes of new matrices
     int numRows = m_nRows;
@@ -706,7 +706,7 @@ bool Matrix2D<T>::separate(Matrix2D<T>* matrix1, Matrix2D<T>* matrix2, int colNu
 *************************************************/
 //return linear index of element given row/col subscript
 template <class T>
-int Matrix2D<T>::sub2Ind(int row, int col)
+int wooMatrix2D<T>::sub2Ind(int row, int col)
 {
     if ((row < m_nRows) && (row >= 0) && (col < m_nCols) && (col >= 0))
         return (row * m_nCols) + col;
@@ -715,7 +715,7 @@ int Matrix2D<T>::sub2Ind(int row, int col)
 }
 
 template<class T>
-bool Matrix2D<T>::isSquare()
+bool wooMatrix2D<T>::isSquare()
 {
     if (m_nCols == m_nRows)
     {
@@ -728,13 +728,13 @@ bool Matrix2D<T>::isSquare()
 }
 
 template<class T>
-bool Matrix2D<T>::closeEnough(T f1, T f2)
+bool wooMatrix2D<T>::closeEnough(T f1, T f2)
 {
     return fabs(f1 - f2) < 1e-9;
 }
 
 template<class T>
-void Matrix2D<T>::swapRow(int i, int j)
+void wooMatrix2D<T>::swapRow(int i, int j)
 {
     T* tmpRow = new T[m_nCols];
     for (int k = 0; k < m_nCols; k++)
@@ -757,7 +757,7 @@ void Matrix2D<T>::swapRow(int i, int j)
 
 //add multiple of row j to row i
 template<class T>
-void Matrix2D<T>::multAdd(int i, int j, T multFactor)
+void wooMatrix2D<T>::multAdd(int i, int j, T multFactor)
 {
     for (int k = 0; k < m_nCols; k++)
     {
@@ -767,7 +767,7 @@ void Matrix2D<T>::multAdd(int i, int j, T multFactor)
 
 //multiply row by scalar
 template<class T>
-void Matrix2D<T>::multRow(int i, T multFactor)
+void wooMatrix2D<T>::multRow(int i, T multFactor)
 {
     for (int k = 0; k < m_nCols; k++)
     {
@@ -777,7 +777,7 @@ void Matrix2D<T>::multRow(int i, T multFactor)
 
 //join another matrix to this one
 template<class T>
-bool Matrix2D<T>::join(const Matrix2D<T>& matrix2)
+bool wooMatrix2D<T>::join(const wooMatrix2D<T>& matrix2)
 {
     int numRows1 = m_nRows;
     int numRows2 = matrix2.m_nRows;
@@ -828,7 +828,7 @@ bool Matrix2D<T>::join(const Matrix2D<T>& matrix2)
 }
 
 template<class T>
-int Matrix2D<T>::findRowWithMaxElement(int colNum, int startingRow)
+int wooMatrix2D<T>::findRowWithMaxElement(int colNum, int startingRow)
 {
     T tmp = m_matrixData[sub2Ind(startingRow, colNum)];
     int rowIndex = startingRow;
@@ -845,9 +845,9 @@ int Matrix2D<T>::findRowWithMaxElement(int colNum, int startingRow)
 }
 
 template<class T>
-Matrix2D<T> Matrix2D<T>::findSubMatrix(int rowNum, int colNum)
+wooMatrix2D<T> wooMatrix2D<T>::findSubMatrix(int rowNum, int colNum)
 {
-    Matrix2D<T> subMatrix(m_nRows-1, m_nCols-1);
+    wooMatrix2D<T> subMatrix(m_nRows-1, m_nCols-1);
     int count = 0;
     for (int i = 0; i < m_nRows; i++)
     {
@@ -864,7 +864,7 @@ Matrix2D<T> Matrix2D<T>::findSubMatrix(int rowNum, int colNum)
 }
 
 template<class T>
-void Matrix2D<T>::printMatrix()
+void wooMatrix2D<T>::printMatrix()
 {
     int nRows = this->getNumRows;
     int nCols = this->getNumCols;
