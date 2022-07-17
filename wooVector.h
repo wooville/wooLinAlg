@@ -125,7 +125,7 @@ template <class T>
 wooVector<T> operator* (const T &lhs, const wooVector<T> &rhs)
 {
     std::vector<T> resultData;
-    for (int i = 0; i < m_nDims; i++)
+    for (int i = 0; i < rhs.m_nDims; i++)
     {
         resultData.push_back(lhs * rhs.m_vectorData.at(i));
     }
@@ -175,7 +175,7 @@ wooVector<T> wooVector<T>::cross (const wooVector<T> &a, const wooVector<T> &b)
 	resultData.push_back(-((a.m_vectorData.at(0) * b.m_vectorData.at(2)) - (a.m_vectorData.at(2) * b.m_vectorData.at(0))));
 	resultData.push_back((a.m_vectorData.at(0) * b.m_vectorData.at(1)) - (a.m_vectorData.at(1) * b.m_vectorData.at(0)));
 
-	qbVector<T> result(resultData);
+	wooVector<T> result(resultData);
 	return result;
 }
 
