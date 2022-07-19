@@ -19,8 +19,10 @@ class wooVector
     ~wooVector();
 
     //accessor
-    int getNumDims();
-    T getElement(int index);
+    int getNumDims() const;
+    T getElement(int index) const;
+
+    void setElement(int index, T value);
 
     //overloaded operators
     wooVector<T> operator+ (const wooVector<T> &rhs) const;
@@ -28,10 +30,20 @@ class wooVector
     wooVector<T> operator* (const T &rhs) const;
 
     template <class U> friend wooVector<U> operator* (const U &lhs, const wooVector<U> &rhs);
+    template <class U> friend wooVector<U> operator* (const wooVector<U> &lhs, const U &rhs);
 
     //static functions for dot and cross product
     static T dot(const wooVector<T> &a, const wooVector<T> &b);
     static wooVector<T> cross(const wooVector<T> &a, const wooVector<T> &b);
+
+    //return norm
+    T norm();
+
+    //return normalized version of vector
+    wooVector<T> normalized();
+
+    //normalize this vector
+    void normalize();
 
     private:
     std::vector<T> m_vectorData;
@@ -66,15 +78,61 @@ wooVector<T>::~wooVector()
     ACCESSORS
 *************************************************/
 template <class T>
-int wooVector<T>::getNumDims()
+int wooVector<T>::getNumDims() const
 {
     return m_nDims;
 }
 
 template <class T>
-T wooVector<T>::getElement(int index)
+T wooVector<T>::getElement(int index) const
 {
     return m_vectorData[index];
+}
+
+template <class T>
+void wooVector<T>::setElement(int index, T value)
+{
+    m_vectorData[index] = value;
+}
+
+/************************************************
+    VECTOR COMPUTATIONS
+*************************************************/
+template <class T>
+T wooVector<T>::norm()
+{
+    T cumulativeSum = static_cast<T>(0.0);
+    for (int i = 0; i < m_nDims; i++)
+    {
+        cumulativeSum += m_vectorData.at(i) * m_vectorData.at(i);
+    }
+
+    return sqrt(cumulativeSum);
+}
+
+//return normalized vector
+template <class T>
+wooVector<T> wooVector<T>::normalized()
+{
+    T norm = this->norm();
+
+    wooVector<T> normalized(m_vectorData);
+
+    return normalized * (static_cast<T>(1.0) / norm);
+}
+
+//normalize this vector
+template <class T>
+void wooVector<T>::normalize()
+{
+    T norm = this->norm();
+    T tmp;
+
+    for (int i = 0; i < m_nDims; i++)
+    {
+        tmp = m_vectorData.at(i) * (static_cast<T>(1.0) / norm);
+        m_vectorData.at(i) = tmp;
+    }
 }
 
 /************************************************
@@ -118,6 +176,19 @@ wooVector<T> wooVector<T>::operator- (const wooVector<T> &rhs) const
     return result;
 }
 
+template <class T>
+wooVector<T> wooVector<T>::operator* (const T &rhs) const
+{
+    std::vector<T> resultData;
+    for (int i = 0; i < m_nDims; i++)
+    {
+        resultData.push_back(m_vectorData.at(i) * rhs);
+    }
+
+    wooVector<T> result(resultData);
+    return result;
+}
+
 /************************************************
     OVERLOADED OPERATORS (FRIEND)
 *************************************************/
@@ -134,8 +205,21 @@ wooVector<T> operator* (const T &lhs, const wooVector<T> &rhs)
     return result;
 }
 
+template <class T>
+wooVector<T> operator* (const wooVector<T> &lhs, const T &rhs)
+{
+    std::vector<T> resultData;
+    for (int i = 0; i < lhs.m_nDims; i++)
+    {
+        resultData.push_back(lhs.m_vectorData.at(i) * rhs);
+    }
+
+    wooVector<T> result(resultData);
+    return result;
+}
+
 /************************************************
-    OVERLOADED OPERATORS (FRIEND)
+    dot and cross prod
 *************************************************/
 template <class T>
 T wooVector<T>::dot (const wooVector<T> &a, const wooVector<T> &b)

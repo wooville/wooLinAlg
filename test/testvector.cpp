@@ -62,6 +62,17 @@ int main()
     cout << "cross product non parallel" << endl;
 	testVector3 = wooVector<double>::cross(testVector, testVector4);
     printVector(testVector3);
+	cout << endl; 
+
+	cout << "test norm" << endl;
+	cout << std::setprecision(3) << testVector.norm() << endl;
+	cout << endl; 
+	cout << "test normalized" << endl;
+	wooVector<double> testVectorNorm = testVector.normalized();
+	printVector(testVectorNorm);
+	cout << "test normalize" << endl;
+	testVector.normalize();
+	printVector(testVector);
 
 	return 0;
 }

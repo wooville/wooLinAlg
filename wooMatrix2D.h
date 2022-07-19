@@ -1,6 +1,13 @@
 #ifndef WOOMATRIX2D_H
 #define WOOMATRIX2D_H
 
+#include <stdexcept>
+#include <iostream>
+#include <iomanip>
+#include <math.h>
+#include <vector>
+#include "wooVector.h"
+
 /* *************************************************************************************************
 	wooMatrix2D
 
@@ -62,6 +69,8 @@ public:
     template <class U> friend wooMatrix2D<U> operator* (const wooMatrix2D<U>& lhs, const wooMatrix2D<U>& rhs);
     template <class U> friend wooMatrix2D<U> operator* (const U& lhs, const wooMatrix2D<U>& rhs);
     template <class U> friend wooMatrix2D<U> operator* (const wooMatrix2D<U>& lhs, const U& rhs);
+
+    template <class U> friend wooVector<U> operator* (const wooMatrix2D<U>& lhs, const wooVector<U>& rhs);
 
     bool separate(wooMatrix2D<T> *matrix1, wooMatrix2D<T> *matrix2, int colNum);
     
@@ -611,6 +620,31 @@ wooMatrix2D<T> operator* (const wooMatrix2D<T>& lhs, const T& rhs)
 
     wooMatrix2D<T> result(numRows, numCols, tmpResult);
     delete[] tmpResult;
+    return result;
+}
+
+//matrix * vector
+template <class T>
+wooVector<T> operator* (const wooMatrix2D<T>& lhs, const wooVector<T>& rhs)
+{
+    if (lhs.m_nCols != rhs.getNumDims())
+    {
+        throw std::invalid_argument("Number of cols in matrix must match number of rows in vector");
+    }
+
+    wooVector<T> result = rhs;
+
+    T cumulativeSum;
+    for (int row = 0; row < lhs.m_nRows; row++)
+    {
+        cumulativeSum = static_cast<T>(0.0);
+        for (int col = 0; col < lhs.m_nCols; col++)
+        {
+            cumulativeSum += (lhs.getElement(row,col) * rhs.getElement(col));
+        }
+        result.setElement(row, cumulativeSum);
+    }
+    
     return result;
 }
 

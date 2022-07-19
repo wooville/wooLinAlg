@@ -26,6 +26,7 @@
 #include <vector>
 
 #include "../wooMatrix2D.h"
+#include "../wooVector.h"
 
 using namespace std;
 
