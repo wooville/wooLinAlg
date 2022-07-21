@@ -49,7 +49,7 @@ void printMatrix(wooMatrix2D<T> matrix)
 int main()
 {
 	cout << "Code to test wooMatrix2D" << endl;
-
+	
 	// *******************************************************************
 	// Create an instance of the wooMatrix2D class.
 	// This will contain a simple 2D 3x4 matrix

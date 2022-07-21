@@ -40,14 +40,15 @@ public:
     void setToIdentity();
 
     //access
-    T getElement(int row, int col);
+    T getElement(int row, int col) const;
     bool setElement(int row, int col, T elementValue);
-    int getNumRows();
-    int getNumCols();
+    int getNumRows() const;
+    int getNumCols() const; 
 
     //manipulation
     bool inverse();
     T determinant();
+    wooMatrix2D<T> rowEchelon();
 
     // Overload == operator.
     bool operator== (const wooMatrix2D<T>& rhs);
@@ -73,11 +74,13 @@ public:
     template <class U> friend wooVector<U> operator* (const wooMatrix2D<U>& lhs, const wooVector<U>& rhs);
 
     bool separate(wooMatrix2D<T> *matrix1, wooMatrix2D<T> *matrix2, int colNum);
+
+    bool isSquare();
+    bool isRowEchelon();
     
 //private:
 public:
-    int sub2Ind(int row, int col);
-    bool isSquare();
+    int sub2Ind(int row, int col) const;
     bool closeEnough(T f1, T f2);
     void swapRow(int i, int j);
     void multAdd(int i, int j, T multFactor);
@@ -222,7 +225,7 @@ void wooMatrix2D<T>::setToIdentity()
     ACCESSORS
 *************************************************/
 template <class T>
-T wooMatrix2D<T>::getElement(int row, int col)
+T wooMatrix2D<T>::getElement(int row, int col) const
 {
     int linearIndex = sub2Ind(row, col);
     if (linearIndex >= 0)
@@ -251,15 +254,81 @@ bool wooMatrix2D<T>::setElement(int row, int col, T value)
 }
 
 template<class T>
-int wooMatrix2D<T>::getNumRows()
+int wooMatrix2D<T>::getNumRows() const
 {
     return m_nRows;
 }
 
 template<class T>
-int wooMatrix2D<T>::getNumCols()
+int wooMatrix2D<T>::getNumCols() const
 {
     return m_nCols;
+}
+
+//convert to row echelon using gaussian elimination
+template<class T>
+wooMatrix2D<T> wooMatrix2D<T>::rowEchelon()
+{
+    //can only compute inverse of square matrix
+    if (m_nCols < m_nRows)
+    {
+        throw std::invalid_argument("Matrix must have at least as many columns as rows");
+    }
+
+    T *tmpMatrixData;
+    tmpMatrixData = new T[m_nRows*m_nCols];
+    for (int i = 0; i < m_nRows*m_nCols; i++)
+    {
+        tmpMatrixData[i] = m_matrixData[i];
+    }
+
+    int cRow, cCol;
+    int maxCount = 100;
+    int count = 0;
+    bool completeFlag = false;
+
+    while ((!completeFlag) && (count < maxCount))
+    {
+        for (int diagIndex = 0; diagIndex < m_nRows; diagIndex++)
+        {
+            //ensure all diag elements = 1
+            cRow = diagIndex;
+            cCol = diagIndex;
+
+            //set all elements below diagonal to 0
+            for (int rowIndex = cRow + 1; rowIndex < m_nRows; rowIndex++)
+            {
+                //check if 0 already
+                if (!closeEnough(m_matrixData[sub2Ind(rowIndex, cCol)], 0.0))
+                {
+                    int rowOneIndex = cCol;
+
+                    T curElementValue = m_matrixData[sub2Ind(rowIndex, cCol)];
+                    T rowOneValue = m_matrixData[sub2Ind(rowOneIndex, cCol)];
+
+                    if (!closeEnough(rowOneValue, 0.0))
+                    {
+                        T correctionFactor = -(curElementValue / rowOneValue);
+                        multAdd(rowIndex, rowOneIndex, correctionFactor);
+                    }
+                }
+            }
+        }
+        completeFlag = true;
+
+        count++;
+    }
+
+    wooMatrix2D<T> outputMatrix(m_nRows, m_nCols, m_matrixData);
+
+    for (int i = 0; i < m_nRows*m_nCols; i++)
+    {
+        m_matrixData[i] = tmpMatrixData[i];
+    }
+
+    delete[] tmpMatrixData;
+
+    return outputMatrix;
 }
 
 //inverse using gauss-jordan elimination
@@ -740,7 +809,7 @@ bool wooMatrix2D<T>::separate(wooMatrix2D<T>* matrix1, wooMatrix2D<T>* matrix2, 
 *************************************************/
 //return linear index of element given row/col subscript
 template <class T>
-int wooMatrix2D<T>::sub2Ind(int row, int col)
+int wooMatrix2D<T>::sub2Ind(int row, int col) const
 {
     if ((row < m_nRows) && (row >= 0) && (col < m_nCols) && (col >= 0))
         return (row * m_nCols) + col;
@@ -765,6 +834,22 @@ template<class T>
 bool wooMatrix2D<T>::closeEnough(T f1, T f2)
 {
     return fabs(f1 - f2) < 1e-9;
+}
+
+//test by taking sum across lower triangular and checking == 0
+template<class T>
+bool wooMatrix2D<T>::isRowEchelon()
+{
+    T cumulativeSum= static_cast<T>(0.0);
+    for (int i = 0; i < m_nRows; i++)
+    {
+        for (int j = 0; j < i; j++)
+        {
+            cumulativeSum += m_matrixData[sub2Ind(i,j)];
+        }
+    }
+
+    return closeEnough(cumulativeSum, 0.0);
 }
 
 template<class T>
