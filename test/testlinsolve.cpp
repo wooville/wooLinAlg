@@ -126,6 +126,48 @@ int main()
   wooVector<double> errorVector = unknownVector - compSolution;
   PrintVector(errorVector);
   cout << endl;
+
+  // Test computation of the matrix rank.
+  cout << "***************************************************************" << endl;
+  cout << "Testing computation of matrix rank" << endl;
+  cout << "***************************************************************" << endl;
+  cout << endl;
+  cout << "Testing with a solvable system:" << endl;
+  PrintMatrix(aMat);
+  cout << "Rank = " << aMat.rank() << endl;
+  cout << endl;
+  cout << "Row echelon form:" << endl;
+  wooMatrix2D<double> aMatRowEchelon = aMat.rowEchelon();
+  PrintMatrix(aMatRowEchelon);
+  cout << endl;
+  // Test the condition when Gaussian elmination fails.
+  cout << "***************************************************************" << endl;
+  cout << "Testing the condition when Gaussian elimination fails" << endl;
+  cout << "***************************************************************" << endl;
+  std::vector<double> geFailData = {0.0, 0.0, 1.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0};
+  wooMatrix2D<double> geFailMatrix (3, 3, &geFailData);
+  cout << "Testing with:" << endl;
+  PrintMatrix(geFailMatrix);
+  cout << endl;
+  cout << "Attempt to perform Gaussian elimination on this gives:" << endl;
+  wooMatrix2D<double> geFailResult = geFailMatrix.rowEchelon();
+  PrintMatrix(geFailResult);
+  cout << endl;
+  cout << "Attempt to compute the rank gives:" << endl;
+  cout << "Rank = "<< geFailMatrix.rank() << endl;
+  cout << endl;
+  cout << "Testing with a zero matrix:" << endl;
+  std::vector<double> geFailData2 = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+  wooMatrix2D<double> geFailMatrix2 (3, 3, &geFailData2);
+  PrintMatrix(geFailMatrix2);
+  cout << endl;
+  cout << "Rank = " << geFailMatrix2.rank() << endl;
+  cout << endl;
+  cout << "Testing with a larger example:" << endl;
+  PrintMatrix(coefficientMatrix);
+  cout << endl;
+  cout << "The rank is " << coefficientMatrix.rank() << endl;
+  cout << endl;
   
 	return 0;
 }   

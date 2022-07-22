@@ -77,6 +77,8 @@ public:
 
     bool isSquare();
     bool isRowEchelon();
+    bool isNonZero();
+    int rank();
     
 //private:
 public:
@@ -331,6 +333,22 @@ wooMatrix2D<T> wooMatrix2D<T>::rowEchelon()
     return outputMatrix;
 }
 
+template <class T>
+bool wooMatrix2D<T>::isRowEchelon()
+{
+    T cumulativeSum = 0.0;
+    
+    for (int i = 1; i < m_nRows; i++)
+    {
+        for (int j = 0; j < i; j++)
+        {
+            cumulativeSum += m_matrixData[sub2Ind(i,j)];
+        }
+    }
+
+    return closeEnough(cumulativeSum, 0.0);
+}
+
 //inverse using gauss-jordan elimination
 template<class T>
 bool wooMatrix2D<T>::inverse()
@@ -485,9 +503,102 @@ inline T wooMatrix2D<T>::determinant()
     return determinant;
 }
 
+template <class T>
+int wooMatrix2D<T>::rank()
+{
+    wooMatrix2D<T> matrixCopy = this->rowEchelon();
+
+    int numNonZeroRows = 0;
+    if (!matrixCopy.isRowEchelon())
+    {
+        std::vector<wooMatrix2D<T>> subMatrixVector;
+        subMatrixVector.push_back(*this);
+
+        bool completeFlag = false;
+        int subMatrixCount = 0;
+        while((subMatrixCount < subMatrixVector.size()) && (!completeFlag))
+        {
+            wooMatrix2D<T> curMatrix = subMatrixVector[subMatrixCount];
+            subMatrixCount++;
+
+            if (curMatrix.isNonZero())
+            {
+                T curMatrixDet = curMatrix.determinant();
+
+                if (!closeEnough(curMatrixDet, 0.0))
+                {
+                    completeFlag = true;
+                    numNonZeroRows = curMatrix.getNumRows();
+                }
+                else
+                {
+                    if ((curMatrix.getNumRows() > 2) && (curMatrix.getNumCols() > 2))
+                    {
+                        for (int i = 0; i < getNumRows(); i++)
+                        {
+                            for (int j = 0; j < getNumCols(); j++)
+                            {
+                                subMatrixVector.push_back(curMatrix.findSubMatrix(i,j));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    else
+    {
+        int nRows = matrixCopy.getNumRows();
+        int nCols = matrixCopy.getNumCols();
+
+        for (int i=0; i<nRows; i++)
+        {
+            int colSum = 0;
+            for (int j=0; j<nCols; j++)
+            {
+                if (!closeEnough(matrixCopy.getElement(i,j), 0.0))
+                {
+                    colSum++;
+                }
+            }
+
+            if (colSum > 0)
+            {
+                numNonZeroRows++;
+            }
+
+        }
+    }
+
+    return numNonZeroRows;
+}
+
 /************************************************
     OVERLOADED OPERATORS
 *************************************************/
+/************************************************
+    = OPERATOR
+*************************************************/
+template <class T>
+wooMatrix2D<T> wooMatrix2D<T>::operator= (const wooMatrix2D<T>& rhs)
+{
+    int numRows = rhs.m_nRows;
+    int numCols = rhs.m_nCols;
+    int numElements = numRows * numCols;
+
+    if (m_matrixData)
+    {
+        delete[] m_matrixData;
+    }
+
+    m_matrixData = new T[m_nElements];
+    for (int i = 0; i < numElements; i++)
+    {
+        m_matrixData[i] = rhs.m_matrixData[i];
+    }
+
+    return *this;
+}
 
 /************************************************
     + OPERATOR
@@ -838,18 +949,18 @@ bool wooMatrix2D<T>::closeEnough(T f1, T f2)
 
 //test by taking sum across lower triangular and checking == 0
 template<class T>
-bool wooMatrix2D<T>::isRowEchelon()
+bool wooMatrix2D<T>::isNonZero()
 {
-    T cumulativeSum= static_cast<T>(0.0);
-    for (int i = 0; i < m_nRows; i++)
+    int numNonZero = 0;
+    for (int i = 0; i < m_nElements; i++)
     {
-        for (int j = 0; j < i; j++)
+        if (!closeEnough(m_matrixData[i], 0.0))
         {
-            cumulativeSum += m_matrixData[sub2Ind(i,j)];
+            numNonZero++;
         }
     }
 
-    return closeEnough(cumulativeSum, 0.0);
+    return (numNonZero != 0);
 }
 
 template<class T>
