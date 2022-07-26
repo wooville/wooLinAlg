@@ -14,6 +14,7 @@ class wooVector
     //constructors
     wooVector();
     wooVector(std::vector<T> input);
+    wooVector(int numDims);
 
     //destructor
     ~wooVector();
@@ -66,6 +67,13 @@ wooVector<T>::wooVector(std::vector<T> input)
 {
     m_nDims = input.size();
     m_vectorData = input;
+}
+
+template <class T>
+wooVector<T>::wooVector(int numDims)
+{
+    m_nDims = numDims;
+    m_vectorData = std::vector<T>(numDims, static_cast<T>(0.0));
 }
 
 template <class T>

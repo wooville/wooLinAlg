@@ -42,6 +42,7 @@ void PrintVector(wooVector<T> inputVector)
 
 int main()
 {
+    int returnCode;
 	cout << "Code to test wooMatrix2D" << endl;
 	cout << "Testing conversion of matrix to row echelon form." << endl;
 	cout << endl;
@@ -76,7 +77,8 @@ int main()
   cout << endl;
   
   // Call the wooLinSolve function.
-  wooVector<double> testResult = wooLinSolve<double>(&aMat, &bVec);
+  wooVector<double> testResult;
+  returnCode = wooLinSolve<double>(aMat, bVec, testResult);
   cout << "And the final result is:" << endl;
   PrintVector(testResult);
   cout << endl;
@@ -118,7 +120,9 @@ int main()
   cout << endl;
   
   cout << "Attempt to solve the linear system..." << endl;
-  wooVector<double> compSolution = wooLinSolve<double>(&coefficientMatrix, &systemResult);
+
+  wooVector<double> compSolution;
+  returnCode = wooLinSolve<double>(coefficientMatrix, systemResult, compSolution);
   PrintVector(compSolution);
   cout << endl;
   
@@ -169,5 +173,40 @@ int main()
   cout << "The rank is " << coefficientMatrix.rank() << endl;
   cout << endl;
   
+  // Test the two possible conditions with no solution
+  cout << "***************************************************************" << endl;
+  cout << "Testing the two possible conditions with no solution" << endl;
+  cout << "***************************************************************" << endl;  
+  cout << endl;
+  {
+  	// Setup a system with an infinite number of solutions.
+  	cout << "A system with an infinite number of solutions:" << endl;
+  	std::vector<double> aMatData = {1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0};
+  	std::vector<double> bVecData = {0.0, 0.0, 0.0};
+  	wooMatrix2D<double> aMat (3, 3, &aMatData);
+  	wooVector<double> bVec {bVecData};
+  	wooVector<double> solution(3);
+  	int test = wooLinSolve<double>(aMat, bVec, solution);
+  	if (test > 0)
+	  	PrintVector<double>(solution);
+	  else
+	  	cout << "Error condition: " << test << endl;
+  }
+  cout << endl;
+  {
+  	// Setup a system with no solutions.
+  	cout << "A system with no solutions:" << endl;
+  	std::vector<double> aMatData = {1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0};
+  	std::vector<double> bVecData = {0.0, -1.0, 1.0};
+  	wooMatrix2D<double> aMat (3, 3, &aMatData);
+  	wooVector<double> bVec {bVecData};
+  	wooVector<double> solution(3);
+  	int test = wooLinSolve<double>(aMat, bVec, solution);
+  	if (test > 0)
+	  	PrintVector<double>(solution);
+	  else
+	  	cout << "Error condition: " << test << endl;
+  }  
+
 	return 0;
 }   
