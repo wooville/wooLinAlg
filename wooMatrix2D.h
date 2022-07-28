@@ -49,6 +49,7 @@ public:
     bool inverse();
     T determinant();
     wooMatrix2D<T> rowEchelon();
+    wooMatrix2D<T> transpose();
 
     // Overload == operator.
     bool operator== (const wooMatrix2D<T>& rhs);
@@ -265,6 +266,22 @@ template<class T>
 int wooMatrix2D<T>::getNumCols() const
 {
     return m_nCols;
+}
+
+template<class T>
+wooMatrix2D<T> wooMatrix2D<T>::transpose()
+{
+    wooMatrix2D<T> resultMatrix(m_nCols, m_nRows);
+
+    for (int i = 0; i < m_nRows; i++)
+    {
+        for (int j = 0; j < m_nCols; j++)
+        {
+            resultMatrix.setElement(j, i, this->getElement(i,j));
+        }
+    }
+    
+    return resultMatrix;
 }
 
 //convert to row echelon using gaussian elimination
@@ -769,18 +786,19 @@ wooMatrix2D<T> operator* (const wooMatrix2D<T>& lhs, const wooMatrix2D<T>& rhs)
 template <class T>
 wooMatrix2D<T> operator* (const T& lhs, const wooMatrix2D<T>& rhs)
 {
-    int numRows = rhs.m_nRows;
-    int numCols = rhs.m_nCols;
-    int numElements = numRows * numCols;
-    T* tmpResult = new T[numElements];
+    wooVector<T> result(lhs.m_nRows);
 
-    for (int i = 0; i < numElements; i++)
+    T cumulativeSum = 0;
+
+    for (int row = 0; row < lhs.m_nRows; row++)
     {
-        tmpResult[i] = lhs * rhs.m_matrixData[i];
+        for (int col = 0; col < lhs.m_nCols; col++)
+        {
+            cumulativeSum += (lhs.getElement(row, col) * rhs.getElement(row,col));
+        }
+        result.setElement(row, cumulativeSum);
     }
 
-    wooMatrix2D<T> result(numRows, numCols, tmpResult);
-    delete[] tmpResult;
     return result;
 }
 
