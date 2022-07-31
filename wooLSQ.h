@@ -28,7 +28,7 @@ int wooLSQ(const wooMatrix2D<T> &Xin, const wooVector<T> &yin, wooVector<T> &res
     }
 
     //multiply inverse by XT and y for final result
-    wooMatrix2D<T> XTXXT = (XTX * XT);
+    wooMatrix2D<T> XTXXT = (XTX * XTz);
     result = (XTXXT * y);
 
     return 1;
