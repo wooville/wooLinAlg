@@ -49,7 +49,7 @@ int main()
 	
 	// Generate a matrix to test things with.
     std::vector<double> simpleData = {1.0, 3.0, -1.0, 13.0, 4.0, -1.0, 1.0, 9.0, 2.0, 4.0, 3.0, -6.0};
-    wooMatrix2D<double> testMatrix(3, 4, &simpleData);
+    wooMatrix2D<double> testMatrix(3, 4, simpleData);
   
   cout << "Original matrix:" << endl;
   PrintMatrix(testMatrix);
@@ -64,7 +64,7 @@ int main()
   
   // Define another matrix as the first part of our system of linear equations.
   std::vector<double> simpleData2 = {1.0, 3.0, -1.0, 4.0, -1.0, 1.0, 2.0, 4.0, 3.0};
-  wooMatrix2D<double> aMat(3, 3, &simpleData2);
+  wooMatrix2D<double> aMat(3, 3, simpleData2);
   cout << "We setup the equations in the form of Ax = b, where A = " << endl;
   PrintMatrix(aMat);
   cout << endl;
@@ -100,7 +100,7 @@ int main()
   	coefficientData.push_back(randomNumber);
   }
   cout << "A random coefficient matrix = " << endl;
-  wooMatrix2D<double> coefficientMatrix(numUnknowns, numUnknowns, &coefficientData);
+  wooMatrix2D<double> coefficientMatrix(numUnknowns, numUnknowns, coefficientData);
   PrintMatrix(coefficientMatrix);
   cout << endl;
   
@@ -149,7 +149,7 @@ int main()
   cout << "Testing the condition when Gaussian elimination fails" << endl;
   cout << "***************************************************************" << endl;
   std::vector<double> geFailData = {0.0, 0.0, 1.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0};
-  wooMatrix2D<double> geFailMatrix (3, 3, &geFailData);
+  wooMatrix2D<double> geFailMatrix (3, 3, geFailData);
   cout << "Testing with:" << endl;
   PrintMatrix(geFailMatrix);
   cout << endl;
@@ -162,7 +162,7 @@ int main()
   cout << endl;
   cout << "Testing with a zero matrix:" << endl;
   std::vector<double> geFailData2 = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
-  wooMatrix2D<double> geFailMatrix2 (3, 3, &geFailData2);
+  wooMatrix2D<double> geFailMatrix2 (3, 3, geFailData2);
   PrintMatrix(geFailMatrix2);
   cout << endl;
   cout << "Rank = " << geFailMatrix2.rank() << endl;
@@ -183,7 +183,7 @@ int main()
   	cout << "A system with an infinite number of solutions:" << endl;
   	std::vector<double> aMatData = {1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0};
   	std::vector<double> bVecData = {0.0, 0.0, 0.0};
-  	wooMatrix2D<double> aMat (3, 3, &aMatData);
+  	wooMatrix2D<double> aMat (3, 3, aMatData);
   	wooVector<double> bVec {bVecData};
   	wooVector<double> solution(3);
   	int test = wooLinSolve<double>(aMat, bVec, solution);
@@ -198,7 +198,7 @@ int main()
   	cout << "A system with no solutions:" << endl;
   	std::vector<double> aMatData = {1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0};
   	std::vector<double> bVecData = {0.0, -1.0, 1.0};
-  	wooMatrix2D<double> aMat (3, 3, &aMatData);
+  	wooMatrix2D<double> aMat (3, 3, aMatData);
   	wooVector<double> bVec {bVecData};
   	wooVector<double> solution(3);
   	int test = wooLinSolve<double>(aMat, bVec, solution);

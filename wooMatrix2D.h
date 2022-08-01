@@ -29,8 +29,8 @@ public:
 	wooMatrix2D();
 	wooMatrix2D(int nRows, int nCols);
     wooMatrix2D(int nRows, int nCols, const T *inputData);
-	wooMatrix2D(const wooMatrix2D<T>& inputMatrix);
-    wooMatrix2D(int nRows, int nCols, const std::vector<T>* inputData);
+	wooMatrix2D(const wooMatrix2D<T> &inputMatrix);
+    wooMatrix2D(int nRows, int nCols, const std::vector<T> &inputData);
 
     //destructor
     ~wooMatrix2D();
@@ -141,14 +141,14 @@ wooMatrix2D<T>::wooMatrix2D(int nRows, int nCols, const T *inputData)
 
 //constructor given std::vector
 template <class T>
-wooMatrix2D<T>::wooMatrix2D(int nRows, int nCols, const std::vector<T> *inputData)
+wooMatrix2D<T>::wooMatrix2D(int nRows, int nCols, const std::vector<T> &inputData)
 {
     m_nRows = nRows;
     m_nCols = nCols;
     m_nElements = m_nRows * m_nCols;
     m_matrixData = new T[m_nElements];
     for (int i = 0; i < m_nElements; i++)
-        m_matrixData[i] = inputData->at(i);
+        m_matrixData[i] = inputData.at(i);
 }
 
 //copy constructor
@@ -786,19 +786,18 @@ wooMatrix2D<T> operator* (const wooMatrix2D<T>& lhs, const wooMatrix2D<T>& rhs)
 template <class T>
 wooMatrix2D<T> operator* (const T& lhs, const wooMatrix2D<T>& rhs)
 {
-    wooVector<T> result(lhs.m_nRows);
+    int numRows = rhs.m_nRows;
+    int numCols = rhs.m_nCols;
+    int numElements = numRows * numCols;
+    T* tmpResult = new T[numElements];
 
-    T cumulativeSum = 0;
-
-    for (int row = 0; row < lhs.m_nRows; row++)
+    for (int i = 0; i < numElements; i++)
     {
-        for (int col = 0; col < lhs.m_nCols; col++)
-        {
-            cumulativeSum += (lhs.getElement(row, col) * rhs.getElement(row,col));
-        }
-        result.setElement(row, cumulativeSum);
+        tmpResult[i] = lhs * rhs.m_matrixData[i];
     }
 
+    wooMatrix2D<T> result(numRows, numCols, tmpResult);
+    delete[] tmpResult;
     return result;
 }
 
@@ -1114,8 +1113,8 @@ wooMatrix2D<T> wooMatrix2D<T>::findSubMatrix(int rowNum, int colNum)
 template<class T>
 void wooMatrix2D<T>::printMatrix()
 {
-    int nRows = this->getNumRows;
-    int nCols = this->getNumCols;
+    int nRows = this->getNumRows();
+    int nCols = this->getNumCols();
     for (int row = 0; row<nRows; row++)
     {
         for (int col = 0; col < nCols; col++)

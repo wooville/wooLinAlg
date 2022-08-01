@@ -70,7 +70,7 @@ int main()
 	// Test matrix transpose.
 	{
 	  std::vector<double> simpleData = {1.0, 3.0, -1.0, 13.0, 4.0, -1.0, 1.0, 9.0, 2.0, 4.0, 3.0, -6.0};
-  	wooMatrix2D<double> testMatrix(3, 4, &simpleData);
+  	wooMatrix2D<double> testMatrix(3, 4, simpleData);
   	
   	cout << "Original matrix:" << endl;
   	PrintMatrix(testMatrix);
@@ -95,7 +95,7 @@ int main()
   {
   	// Define our X matrix.
   	std::vector<double> Xdata = {1.0, 1.0, 1.0, 2.0, 1.0, 3.0};
-  	wooMatrix2D<double> X(3, 2, &Xdata);
+  	wooMatrix2D<double> X(3, 2, Xdata);
   	
   	// Define our y vector.
   	std::vector<double> Ydata = {2.0, 4.0, 4.0};
