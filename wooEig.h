@@ -8,8 +8,136 @@
 #include <vector>
 #include "wooVector.h"
 #include "wooMatrix2D.h"
+#include "wooQR.h"
 
 constexpr int WOOEIG_MATRIXNOTSQUARE = -1;
+constexpr int WOOEIG_MATRIXNOTSYMMETRIC = -2;
+constexpr int WOOEIG_MAXITERATIONSEXCEEDED = -3;
+
+//estimate real eigenvalues using QR decomp
+//only valid for matrices with all real eigenvalues (aka only symmetric matrices)
+template <class T>
+int wooEIG_QR(const wooMatrix2D<T> &inputMatrix, std::vector<T> &eigenvalues)
+{
+    wooMatrix2D<T> A = inputMatrix;
+
+    if (!A.isSquare())
+    {
+        return WOOEIG_MATRIXNOTSQUARE;
+    }
+
+    if (!A.isSymmetric())
+    {
+        return WOOEIG_MATRIXNOTSYMMETRIC;
+    }
+
+    int numRows = A.getNumRows();
+
+    wooMatrix2D<T> identityMatrix(numRows, numRows);
+    identityMatrix.setToIdentity();
+
+    wooMatrix2D<T> Q (numRows, numRows);
+    wooMatrix2D<T> R (numRows, numRows);
+
+    int iterations = 1000;
+    int count = 0;
+    bool continueFlag = true;
+    while ((count < iterations) && continueFlag)
+    {
+        //compute QR decomp of A
+        int returnCode = wooQR<T>(A, Q, R);
+
+        //find next value of A
+        A = R * Q;
+
+        //check if A close enough to upper triangular
+        if (A.isRowEchelon())
+        {
+            continueFlag = false;
+        }
+        count++;
+    }
+
+    for (int i = 0; i < numRows; i++)
+    {
+        eigenvalues.push_back(A.getElement(i,i));
+    }
+
+
+    if (count == iterations)
+    {
+        return WOOEIG_MAXITERATIONSEXCEEDED;
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+//inverse power iteration method
+template <class T>
+int wooEIG_InvPIt(const wooMatrix2D<T> &inputMatrix, T &eigenvalue, wooVector<T> &eigenVector)
+{
+    wooMatrix2D<T> A = inputMatrix;
+
+    if (!A.isSquare())
+    {
+        return WOOEIG_MATRIXNOTSQUARE;
+    }
+
+    //random generator
+    std::random_device myRandomDevice;
+    std::mt19937 myRandomGenerator(myRandomDevice());
+    std::uniform_int_distribution<int> myDistribution(1.0, 10.0);
+
+    int numRows = A.getNumRows();
+
+    wooMatrix2D<T> identityMatrix(numRows, numRows);
+    identityMatrix.setToIdentity();
+
+    //begin computation
+    //generate random vector as starting point for approximation
+    wooVector<T> v(numRows);
+    for (int i = 0; i < numRows; i++)
+    {
+        v.setElement(i, static_cast<T>(myDistribution(myRandomGenerator)));
+    }
+
+    int iterations = 100;
+    int count = 0;
+    T deltaThreshold = static_cast<T>(1e-9);
+    T delta = static_cast<T>(1e6);
+    wooVector<T> prevVector(numRows);
+    wooMatrix2D<T> tmpMatrix(numRows, numRows);
+    
+    while ((count < iterations) && (delta > deltaThreshold))
+    {
+        //for use computing delta
+        prevVector = v;
+
+        //find next value of v
+        tmpMatrix = A - (eigenvalue * identityMatrix);
+        tmpMatrix.inverse();
+        v = tmpMatrix * v;
+        v.normalize();
+
+        //find new delta
+        delta = (v - prevVector).norm();
+        
+        count++;
+    }
+
+    eigenVector = v;
+
+    if (count == iterations)
+    {
+        return WOOEIG_MAXITERATIONSEXCEEDED;
+    }
+    else
+    {
+        return 0;
+    }
+}
 
 //power iteration method of finding eigenvector/value
 template <class T>

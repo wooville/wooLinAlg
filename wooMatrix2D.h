@@ -77,6 +77,7 @@ public:
     bool separate(wooMatrix2D<T> *matrix1, wooMatrix2D<T> *matrix2, int colNum);
 
     bool isSquare();
+    bool isSymmetric();
     bool isRowEchelon();
     bool isNonZero();
     int rank();
@@ -401,7 +402,7 @@ bool wooMatrix2D<T>::inverse()
             //if row with max isnt this row, swap into this row
             if (maxIndex != cRow)
             {
-                std::cout << "Swap rows " << cRow << " and " << maxIndex << std::endl;
+                //std::cout << "Swap rows " << cRow << " and " << maxIndex << std::endl;
                 swapRow(cRow, maxIndex);
             }
 
@@ -410,7 +411,7 @@ bool wooMatrix2D<T>::inverse()
             {
                 T multFactor = 1.0 / m_matrixData[sub2Ind(cRow, cCol)];
                 multRow(cRow, multFactor);
-                std::cout << "Multiply row " << cRow << " by " << multFactor << std::endl;
+                //std::cout << "Multiply row " << cRow << " by " << multFactor << std::endl;
                 //std::cout << "should be 1 " << m_matrixData[sub2Ind(cRow, cCol)] << std::endl;
             }
 
@@ -431,8 +432,8 @@ bool wooMatrix2D<T>::inverse()
                     {
                         T correctionFactor = -(curElementValue / rowOneValue);
                         multAdd(rowIndex, rowOneIndex, correctionFactor);
-                        std::cout << "Multiply row " << rowOneIndex << " by " << correctionFactor <<
-                            " and add to row " << rowIndex << std::endl;
+                        //std::cout << "Multiply row " << rowOneIndex << " by " << correctionFactor <<
+                        //    " and add to row " << rowIndex << std::endl;
                     }
                 }
             }
@@ -454,8 +455,8 @@ bool wooMatrix2D<T>::inverse()
                     {
                         T correctionFactor = -(curElementValue / rowOneValue);
                         multAdd(cRow, rowOneIndex, correctionFactor);
-                        std::cout << "Multiply row " << rowOneIndex << " by " << correctionFactor <<
-                            " and add to row " << cRow << std::endl;
+                        //std::cout << "Multiply row " << rowOneIndex << " by " << correctionFactor <<
+                        //    " and add to row " << cRow << std::endl;
                     }
                 }
             }
@@ -956,6 +957,42 @@ bool wooMatrix2D<T>::isSquare()
     {
         return false;
     }
+}
+
+//test symmetry
+template<class T>
+bool wooMatrix2D<T>::isSymmetric()
+{
+    if (!this->isSquare())
+    {
+        return false;
+    }
+    
+
+    T curRowElement = static_cast<T>(0.0);
+    T curColElement = static_cast<T>(0.0);
+    bool returnFlag = true;
+    int diagIndex = 0;
+    while ((diagIndex < m_nCols) && returnFlag)
+    {
+        int rowIndex = diagIndex + 1;
+        while ((rowIndex < m_nCols) && returnFlag)
+        {
+            curRowElement = this->getElement(rowIndex, diagIndex);
+            curColElement = this->getElement(diagIndex, rowIndex);
+
+            if (!closeEnough(curRowElement, curColElement))
+            {
+                returnFlag = false;
+            }
+
+            rowIndex++;
+        }
+
+        diagIndex++;
+    }
+
+    return returnFlag;
 }
 
 template<class T>

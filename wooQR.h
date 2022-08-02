@@ -34,7 +34,7 @@ int wooQR(const wooMatrix2D<T> &A, wooMatrix2D<T> &Q, wooMatrix2D<T> &R)
         for (int i = j; i < numCols; i++)
         {
             a1.setElement(i-j, inputMatrix.getElement(i,j));
-            b1.setElement(i-j, static_cast<T>(1.0));
+            b1.setElement(i-j, static_cast<T>(0.0));
         }
         b1.setElement(0, static_cast<T>(1.0));
 
@@ -50,6 +50,7 @@ int wooQR(const wooMatrix2D<T> &A, wooMatrix2D<T> &Q, wooMatrix2D<T> &R)
         wooVector<T> u = a1 - (sgn * a1norm * b1);
         wooVector<T> n = u.normalized();
 
+        //convert n to matrix and transpose it
         wooMatrix2D<T> nMat(numCols-j, 1);
         for (int i = 0; i < (numCols-j); i++)
         {
