@@ -6,7 +6,7 @@ https://www.youtube.com/playlist?list=PL3WoIG-PLjSv9vFx2dg0BqzDZH_6qzF8-
 
 Functions are implemented in header files to allow for generic template data type T.
 
-#Functions
+# Functions
 wooPCA.h
 Implementation of Principal Component Analysis (PCA).
 
