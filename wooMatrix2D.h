@@ -49,7 +49,7 @@ public:
     bool inverse();
     T determinant();
     wooMatrix2D<T> rowEchelon();
-    wooMatrix2D<T> transpose();
+    wooMatrix2D<T> transpose() const;
 
     // Overload == operator.
     bool operator== (const wooMatrix2D<T>& rhs);
@@ -74,7 +74,7 @@ public:
 
     template <class U> friend wooVector<U> operator* (const wooMatrix2D<U>& lhs, const wooVector<U>& rhs);
 
-    bool separate(wooMatrix2D<T> *matrix1, wooMatrix2D<T> *matrix2, int colNum);
+    bool separate(wooMatrix2D<T> matrix1, wooMatrix2D<T> matrix2, int colNum);
 
     bool isSquare();
     bool isSymmetric();
@@ -93,6 +93,8 @@ public:
     int findRowWithMaxElement(int colNum, int startingRow);
     wooMatrix2D<T> findSubMatrix(int colNum, int rowNum);
     void printMatrix();
+    void printMatrix(int precision);
+
 
 private:
     T* m_matrixData;
@@ -270,7 +272,7 @@ int wooMatrix2D<T>::getNumCols() const
 }
 
 template<class T>
-wooMatrix2D<T> wooMatrix2D<T>::transpose()
+wooMatrix2D<T> wooMatrix2D<T>::transpose() const
 {
     wooMatrix2D<T> resultMatrix(m_nCols, m_nRows);
 
@@ -402,18 +404,25 @@ bool wooMatrix2D<T>::inverse()
             //if row with max isnt this row, swap into this row
             if (maxIndex != cRow)
             {
-                //std::cout << "Swap rows " << cRow << " and " << maxIndex << std::endl;
+                std::cout << "Swap rows " << cRow << " and " << maxIndex << std::endl;
                 swapRow(cRow, maxIndex);
             }
 
             //set value at (cRow, cCol) = 1 if it isnt already
-            if (m_matrixData[sub2Ind(cRow, cCol)] != 1.0)
+            //add check != 0 to avoid nan result
+            if ( (m_matrixData[sub2Ind(cRow, cCol)] != 1.0) && (!closeEnough(m_matrixData[sub2Ind(cRow, cCol)], 0.0)) )
             {
                 T multFactor = 1.0 / m_matrixData[sub2Ind(cRow, cCol)];
                 multRow(cRow, multFactor);
                 //std::cout << "Multiply row " << cRow << " by " << multFactor << std::endl;
                 //std::cout << "should be 1 " << m_matrixData[sub2Ind(cRow, cCol)] << std::endl;
-            }
+            }/* else {
+                std::cout << "TESTTTSTSD " << m_matrixData[sub2Ind(cRow, cCol)] << std::endl;
+                printMatrix();
+                std::cout << "TESTTTSTSD2222" << std::endl;
+                completeFlag = true;
+                break;
+            }*/
 
             //evaluate the column
             for (int rowIndex = cRow + 1; rowIndex < m_nRows; rowIndex++)
@@ -431,8 +440,10 @@ bool wooMatrix2D<T>::inverse()
                     if (!closeEnough(rowOneValue, 0.0))
                     {
                         T correctionFactor = -(curElementValue / rowOneValue);
+                        
                         multAdd(rowIndex, rowOneIndex, correctionFactor);
-                        //std::cout << "Multiply row " << rowOneIndex << " by " << correctionFactor <<
+                        
+                        //std::cout << "111Multiply row " << rowOneIndex << " by " << correctionFactor <<
                         //    " and add to row " << rowIndex << std::endl;
                     }
                 }
@@ -455,7 +466,7 @@ bool wooMatrix2D<T>::inverse()
                     {
                         T correctionFactor = -(curElementValue / rowOneValue);
                         multAdd(cRow, rowOneIndex, correctionFactor);
-                        //std::cout << "Multiply row " << rowOneIndex << " by " << correctionFactor <<
+                        //std::cout << "222Multiply row " << rowOneIndex << " by " << correctionFactor <<
                         //    " and add to row " << cRow << std::endl;
                     }
                 }
@@ -465,14 +476,19 @@ bool wooMatrix2D<T>::inverse()
         //separate into left and right halves
         wooMatrix2D<T> leftHalf;
         wooMatrix2D<T> rightHalf;
-        this->separate(&leftHalf, &rightHalf, originalNumCols);
+        
+        this->separate(leftHalf, rightHalf, originalNumCols);
+        //std::cout << "lh " << leftHalf.getNumCols() << " || rh " << rightHalf.getNumCols() << std::endl;
 
         //after separating, left half should be identity matrix
+        //leftHalf.printMatrix();
+        //std::cout << std::endl;
         if (leftHalf == identityMatrix)
         {
             completeFlag = true;
 
             //rebuild matrix with just the right half (inverse)
+            //std::cout << "orig " << originalNumCols << std::endl;
             m_nCols = originalNumCols;
             m_nElements = m_nRows * m_nCols;
             delete[] m_matrixData;
@@ -485,6 +501,8 @@ bool wooMatrix2D<T>::inverse()
 
         count++;
     }
+
+    //std::cout << "inside inverse " << m_nCols << std::endl;
 
     return completeFlag;
 }
@@ -904,7 +922,7 @@ bool wooMatrix2D<T>::compare(const wooMatrix2D<T>& matrix1, double tolerance)
 
 //separate matrix into 2 matrices around colNum
 template<class T>
-bool wooMatrix2D<T>::separate(wooMatrix2D<T>* matrix1, wooMatrix2D<T>* matrix2, int colNum)
+bool wooMatrix2D<T>::separate(wooMatrix2D<T> matrix1, wooMatrix2D<T> matrix2, int colNum)
 {
     //sizes of new matrices
     int numRows = m_nRows;
@@ -912,8 +930,8 @@ bool wooMatrix2D<T>::separate(wooMatrix2D<T>* matrix1, wooMatrix2D<T>* matrix2, 
     int numCols2 = m_nCols - colNum;
 
     //resize will also empty matrix
-    matrix1->resize(numRows, numCols1);
-    matrix2->resize(numRows, numCols1);
+    matrix1.resize(numRows, numCols1);
+    matrix2.resize(numRows, numCols1);
 
     //loop over original and store 
     for (int row = 0; row < m_nRows; row++)
@@ -922,11 +940,11 @@ bool wooMatrix2D<T>::separate(wooMatrix2D<T>* matrix1, wooMatrix2D<T>* matrix2, 
         {
             if (col < colNum)
             {
-                matrix1->setElement(row, col, this->getElement(row, col));
+                matrix1.setElement(row, col, this->getElement(row, col));
             }
             else
             {
-                matrix2->setElement(row, col-colNum, this->getElement(row, col));
+                matrix2.setElement(row, col-colNum, this->getElement(row, col));
             }
         }
     }
@@ -1157,6 +1175,21 @@ void wooMatrix2D<T>::printMatrix()
         for (int col = 0; col < nCols; col++)
         {
             std::cout << std::fixed << std::setprecision(3) << this->getElement(row, col) << "  ";
+        }
+        std::cout << std::endl;
+    }
+}
+
+template<class T>
+void wooMatrix2D<T>::printMatrix(int precision)
+{
+    int nRows = this->getNumRows();
+    int nCols = this->getNumCols();
+    for (int row = 0; row<nRows; row++)
+    {
+        for (int col = 0; col < nCols; col++)
+        {
+            std::cout << std::fixed << std::setprecision(precision) << this->getElement(row, col) << "  ";
         }
         std::cout << std::endl;
     }

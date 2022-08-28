@@ -76,7 +76,7 @@ int wooEIG_QR(const wooMatrix2D<T> &inputMatrix, std::vector<T> &eigenvalues)
 
 //inverse power iteration method
 template <class T>
-int wooEIG_InvPIt(const wooMatrix2D<T> &inputMatrix, T &eigenvalue, wooVector<T> &eigenVector)
+int wooEIG_InvPIt(const wooMatrix2D<T> &inputMatrix, const T &eigenvalue, wooVector<T> &eigenVector)
 {
     wooMatrix2D<T> A = inputMatrix;
 
@@ -117,7 +117,10 @@ int wooEIG_InvPIt(const wooMatrix2D<T> &inputMatrix, T &eigenvalue, wooVector<T>
 
         //find next value of v
         tmpMatrix = A - (eigenvalue * identityMatrix);
+        //tmpMatrix.printMatrix();
+        //std::cout << std::endl;
         tmpMatrix.inverse();
+        //std::cout << tmpMatrix.getNumCols() << " || rows " << v.getNumDims() << std::endl;
         v = tmpMatrix * v;
         v.normalize();
 

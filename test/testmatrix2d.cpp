@@ -225,6 +225,20 @@ int main()
 	cout << "Using invertTest * invertResult:" << endl;
 	wooMatrix2D<double> invertAccuracy = invertTest * invertResult;
 	printMatrix(invertAccuracy);
+	/*
+	cout << endl << "**************************" << endl;
+	cout << "Test matrix inversion" << endl;
+	cout << "Attempt to invert a specific matrix:" << endl;
+	//double invertTestData[9] = {2.0, 1.0, 1.0, 1.0, 2.0, 3.0, 0.0, 3.0, 1.0};
+	double invertTestData1[9] = { 0.261, 0.005, 0.389, 0.005, 0.248, 0.352, 0.389, 0.352, 1.057 };
+	wooMatrix2D<double> invertTest1(3, 3, invertTestData1);
+	wooMatrix2D<double> invertResult1 = invertTest1;
+	invertResult1.inverse();
+	cout << "From:" << endl;
+	printMatrix(invertTest1);
+	cout << "To:" << endl;
+	printMatrix(invertResult1);
+	*/
 
 	return 0;
 }
