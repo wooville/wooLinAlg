@@ -2,6 +2,7 @@
 A linear algebra library for C++ created while following the excellent series on the YouTube channel QuantitativeBytes, with additions and changes (ex inverse from adjoint and related functions):
 
 www.youtube.com/c/QuantitativeBytes
+
 https://www.youtube.com/playlist?list=PL3WoIG-PLjSv9vFx2dg0BqzDZH_6qzF8-
 
 Functions are implemented in header files to allow for generic template data type T.
