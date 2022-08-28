@@ -47,9 +47,13 @@ public:
 
     //manipulation
     bool inverse();
+    bool inverseFromAdj();
     T determinant();
     wooMatrix2D<T> rowEchelon();
     wooMatrix2D<T> transpose() const;
+
+    wooMatrix2D<T> getCofactor(int p, int q);
+    wooMatrix2D<T> adjoint();
 
     // Overload == operator.
     bool operator== (const wooMatrix2D<T>& rhs);
@@ -74,7 +78,7 @@ public:
 
     template <class U> friend wooVector<U> operator* (const wooMatrix2D<U>& lhs, const wooVector<U>& rhs);
 
-    bool separate(wooMatrix2D<T> matrix1, wooMatrix2D<T> matrix2, int colNum);
+    bool separate(wooMatrix2D<T> &matrix1, wooMatrix2D<T> &matrix2, int colNum);
 
     bool isSquare();
     bool isSymmetric();
@@ -181,7 +185,7 @@ wooMatrix2D<T>::~wooMatrix2D()
     CONFIGURATION
 *************************************************/
 template <class T>
-bool wooMatrix2D<T>::resize(int nCols, int nRows)
+bool wooMatrix2D<T>::resize(int nRows, int nCols)
 {
     m_nRows = nRows;
     m_nCols = nCols;
@@ -404,25 +408,19 @@ bool wooMatrix2D<T>::inverse()
             //if row with max isnt this row, swap into this row
             if (maxIndex != cRow)
             {
-                std::cout << "Swap rows " << cRow << " and " << maxIndex << std::endl;
+                //std::cout << "Swap rows " << cRow << " and " << maxIndex << std::endl;
                 swapRow(cRow, maxIndex);
             }
 
             //set value at (cRow, cCol) = 1 if it isnt already
             //add check != 0 to avoid nan result
-            if ( (m_matrixData[sub2Ind(cRow, cCol)] != 1.0) && (!closeEnough(m_matrixData[sub2Ind(cRow, cCol)], 0.0)) )
+            if (m_matrixData[sub2Ind(cRow, cCol)] != 1.0)
             {
                 T multFactor = 1.0 / m_matrixData[sub2Ind(cRow, cCol)];
                 multRow(cRow, multFactor);
                 //std::cout << "Multiply row " << cRow << " by " << multFactor << std::endl;
                 //std::cout << "should be 1 " << m_matrixData[sub2Ind(cRow, cCol)] << std::endl;
-            }/* else {
-                std::cout << "TESTTTSTSD " << m_matrixData[sub2Ind(cRow, cCol)] << std::endl;
-                printMatrix();
-                std::cout << "TESTTTSTSD2222" << std::endl;
-                completeFlag = true;
-                break;
-            }*/
+            }
 
             //evaluate the column
             for (int rowIndex = cRow + 1; rowIndex < m_nRows; rowIndex++)
@@ -436,6 +434,8 @@ bool wooMatrix2D<T>::inverse()
 
                     T curElementValue = m_matrixData[sub2Ind(rowIndex, cCol)];
                     T rowOneValue = m_matrixData[sub2Ind(rowOneIndex, cCol)];
+
+                    T correctionFactorCheck = -(curElementValue / rowOneValue);
 
                     if (!closeEnough(rowOneValue, 0.0))
                     {
@@ -507,9 +507,30 @@ bool wooMatrix2D<T>::inverse()
     return completeFlag;
 }
 
+template<class T>
+bool wooMatrix2D<T>::inverseFromAdj()
+{
+    if (!isSquare())
+    {
+        throw std::invalid_argument("Can only find inverse of square matrix");
+    }
+
+    T det = this->determinant();
+    wooMatrix2D<T> adj = this->adjoint();
+    wooMatrix2D<T> inverse = (1/det)*adj;
+
+    //update stored data
+    for (int i = 0; i < m_nElements; i++)
+    {
+        m_matrixData[i] = inverse.m_matrixData[i];
+    }
+
+    return 1;
+}
+
 //recursive function to calculate matrix determinant
 template<class T>
-inline T wooMatrix2D<T>::determinant()
+T wooMatrix2D<T>::determinant()
 {
     if (!isSquare())
     {
@@ -537,6 +558,72 @@ inline T wooMatrix2D<T>::determinant()
     }
 
     return determinant;
+}
+
+// Function to get cofactor of A[p][q]
+template<class T>
+wooMatrix2D<T> wooMatrix2D<T>::getCofactor(int p, int q)
+{
+    int i = 0, j = 0;
+    wooMatrix2D<T> tmp(m_nRows-1, m_nCols-1);
+ 
+    // Looping for each element of the matrix
+    for (int row = 0; row < m_nRows; row++) {
+        for (int col = 0; col < m_nCols; col++) {
+            //  Copying into temporary matrix only those
+            //  element which are not in given row and
+            //  column
+            if (row != p && col != q) {
+                tmp.setElement(i, j++, m_matrixData[sub2Ind(row, col)]);
+ 
+                // Row is filled, so increase row index and
+                // reset col index
+                if (j == m_nCols - 1) {
+                    j = 0;
+                    i++;
+                }
+            }
+        }
+    }
+
+    return tmp;
+}
+
+// Function to get adjoint of this matrix.
+template<class T>
+wooMatrix2D<T> wooMatrix2D<T>::adjoint()
+{
+    if (!isSquare())
+    {
+        throw std::invalid_argument("Can only find determinant of square matrix");
+    }
+
+    wooMatrix2D<T> adj(m_nRows, m_nCols);
+
+    if (m_nRows == 1) {
+        adj.setElement(0, 0, 1);
+        return adj;
+    }
+ 
+    // tmp is used to store cofactors
+    int sign = 1;
+    wooMatrix2D<T> tmp(m_nRows-1, m_nCols-1);
+ 
+    for (int i = 0; i < m_nRows; i++) {
+        for (int j = 0; j < m_nCols; j++) {
+            // get cofactor of A[i][j]
+            tmp = getCofactor(i, j);
+ 
+            // sign of adj[j][i] positive if sum of row and column indexes is even
+            sign = ((i + j) % 2 == 0) ? 1 : -1;
+ 
+            //get transpose of cofactor matrix
+            T val = (sign) * (tmp.determinant());
+            adj.setElement(j, i, val);
+        }
+    }
+
+    return adj;
 }
 
 template <class T>
@@ -618,22 +705,22 @@ int wooMatrix2D<T>::rank()
 template <class T>
 wooMatrix2D<T> wooMatrix2D<T>::operator= (const wooMatrix2D<T>& rhs)
 {
-    int numRows = rhs.m_nRows;
-    int numCols = rhs.m_nCols;
-    int numElements = numRows * numCols;
-
-    if (m_matrixData)
-    {
-        delete[] m_matrixData;
-    }
-
-    m_matrixData = new T[m_nElements];
-    for (int i = 0; i < numElements; i++)
-    {
-        m_matrixData[i] = rhs.m_matrixData[i];
-    }
-
-    return *this;
+	// Make sure we're not assigning to ourself.
+	if (this != &rhs)
+	{
+		m_nRows = rhs.m_nRows;
+		m_nCols = rhs.m_nCols;
+		m_nElements = rhs.m_nElements;
+		
+		if (m_matrixData)
+			delete[] m_matrixData;
+		
+		m_matrixData = new T[m_nElements];
+		for (int i=0; i<m_nElements; i++)
+			m_matrixData[i] = rhs.m_matrixData[i];	
+			
+		return *this;
+	}
 }
 
 /************************************************
@@ -922,7 +1009,7 @@ bool wooMatrix2D<T>::compare(const wooMatrix2D<T>& matrix1, double tolerance)
 
 //separate matrix into 2 matrices around colNum
 template<class T>
-bool wooMatrix2D<T>::separate(wooMatrix2D<T> matrix1, wooMatrix2D<T> matrix2, int colNum)
+bool wooMatrix2D<T>::separate(wooMatrix2D<T> &matrix1, wooMatrix2D<T> &matrix2, int colNum)
 {
     //sizes of new matrices
     int numRows = m_nRows;
@@ -948,6 +1035,8 @@ bool wooMatrix2D<T>::separate(wooMatrix2D<T> matrix1, wooMatrix2D<T> matrix2, in
             }
         }
     }
+
+    
     return true;
 }
 

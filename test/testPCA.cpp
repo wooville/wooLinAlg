@@ -124,7 +124,7 @@ int main()
 					outputFile << newX.getElement(i, 0) << "," << newX.getElement(i, 1) << endl;
 				}
 				outputFile.close();
-			}			
+			}
 			
 		}
 	}

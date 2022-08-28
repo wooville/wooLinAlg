@@ -240,5 +240,31 @@ int main()
 	printMatrix(invertResult1);
 	*/
 
+	cout << endl << "**************************" << endl;
+	cout << "Test matrix adjoint" << endl;
+	cout << "Attempt to find adj of a square matrix:" << endl;
+	//double invertTestData[9] = {2.0, 1.0, 1.0, 1.0, 2.0, 3.0, 0.0, 3.0, 1.0};
+	double adjTestData[9] = { 2.0, 1.0, 1.0, 1.0, 0.0, 1.0, 0.0, 3.0, 1.0 };
+	wooMatrix2D<double> adjTest(3, 3, adjTestData);
+	wooMatrix2D<double> adjResult = adjTest;
+	adjResult = adjResult.adjoint();
+	cout << "From:" << endl;
+	printMatrix(adjTest);
+	cout << "To:" << endl;
+	printMatrix(adjResult);
+
+	cout << endl << "**************************" << endl;
+	cout << "Test matrix inversion using adjoint" << endl;
+	cout << "Attempt to invert a square matrix:" << endl;
+	//double invertTestData[9] = {2.0, 1.0, 1.0, 1.0, 2.0, 3.0, 0.0, 3.0, 1.0};
+	double invertTestDataAdj[9] = { 2.0, 1.0, 1.0, 1.0, 0.0, 1.0, 0.0, 3.0, 1.0 };
+	wooMatrix2D<double> invertTestAdj(3, 3, invertTestDataAdj);
+	wooMatrix2D<double> invertResultAdj = invertTestAdj;
+	invertResultAdj.inverseFromAdj();
+	cout << "From:" << endl;
+	printMatrix(invertTestAdj);
+	cout << "To:" << endl;
+	printMatrix(invertResultAdj);
+
 	return 0;
 }

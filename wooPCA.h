@@ -65,7 +65,7 @@ wooMatrix2D<T> computeCovariance(const wooMatrix2D<T> &X)
 }
 
 template <typename T>
-int computeEigenvectors(const wooMatrix2D<T> & covarianceMatrix, wooMatrix2D<T> &eigenvectors)
+int computeEigenvectors(const wooMatrix2D<T> &covarianceMatrix, wooMatrix2D<T> &eigenvectors)
 {
     wooMatrix2D<T> X = covarianceMatrix;
 
@@ -88,6 +88,7 @@ int computeEigenvectors(const wooMatrix2D<T> & covarianceMatrix, wooMatrix2D<T> 
     //compute eigenvector for each eigenvalue
     wooVector<T> eV(X.getNumCols());
     wooMatrix2D<T> eVM(X.getNumRows(), X.getNumCols());
+    //std::cout << eVM.getNumRows() << " || rows " <<  eVM.getNumCols() << std::endl;
     for (int j = 0; j < eigenvalues.size(); j++)
     {
         T eig = eigenvalues.at(j);
@@ -99,7 +100,10 @@ int computeEigenvectors(const wooMatrix2D<T> & covarianceMatrix, wooMatrix2D<T> 
         }
     }
 
+    //eVM.printMatrix();
     eigenvectors = eVM;
+    //eigenvectors.printMatrix();
+    //std::cout << eigenvectors.getNumRows() << " || rows " <<  eigenvectors.getNumCols() << std::endl;
 
     return returnCode;
 }
@@ -116,6 +120,8 @@ int wooPCA(const wooMatrix2D<T> &inputData, wooMatrix2D<T> &outputComponents)
 
     wooMatrix2D<T> eigenvectors;
     int returnCode = computeEigenvectors(covX, eigenvectors);
+
+    outputComponents = eigenvectors;
 
     return returnCode;
 }

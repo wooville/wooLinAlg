@@ -119,10 +119,11 @@ int wooEIG_InvPIt(const wooMatrix2D<T> &inputMatrix, const T &eigenvalue, wooVec
         tmpMatrix = A - (eigenvalue * identityMatrix);
         //tmpMatrix.printMatrix();
         //std::cout << std::endl;
-        tmpMatrix.inverse();
+        tmpMatrix.inverseFromAdj();
         //std::cout << tmpMatrix.getNumCols() << " || rows " << v.getNumDims() << std::endl;
         v = tmpMatrix * v;
         v.normalize();
+        
 
         //find new delta
         delta = (v - prevVector).norm();
